@@ -18,6 +18,7 @@ import type {
   WalletTransaction,
   WalletType,
 } from './types';
+import { StellarReconnectManager } from './adapters/stellar';
 
 /**
  * Wallet manager configuration
@@ -39,6 +40,8 @@ export interface WalletManagerOptions {
   onAccountChange?: (account: WalletAccount | null, walletId: string) => void;
   /** Callback when network changes */
   onNetworkChange?: (chainId: ChainId, network: NetworkType, walletId: string) => void;
+  /** Automatically reconnect Stellar wallet sessions on initialization */
+  autoReconnect?: boolean;
 }
 
 /**
@@ -77,6 +80,15 @@ export class WalletManager {
       for (const adapter of options.adapters) {
         this.registerAdapter(adapter);
       }
+    }
+
+    // Auto-reconnect Stellar sessions if configured
+    if (options.autoReconnect) {
+      setTimeout(() => {
+        this.autoReconnectStellar().catch((err) => {
+          this.options.onError?.(err);
+        });
+      }, 0);
     }
   }
 
@@ -209,6 +221,11 @@ export class WalletManager {
     // Set as active wallet
     this.activeWalletId = adapterId;
 
+    // Persist session if it is a Stellar wallet adapter
+    if (adapter.networkType === 'stellar') {
+      StellarReconnectManager.saveSession(adapterId, account);
+    }
+
     this.emit('connect', { walletId: adapterId, account });
     this.options.onConnect?.(account, adapterId);
 
@@ -230,6 +247,11 @@ export class WalletManager {
 
     this.connections.delete(adapterId);
 
+    // Clear persisted session if it is a Stellar wallet adapter
+    if (adapter.networkType === 'stellar') {
+      StellarReconnectManager.clearSession();
+    }
+
     // If this was the active wallet, switch to another
     if (this.activeWalletId === adapterId) {
       const remaining = Array.from(this.connections.keys());
@@ -248,6 +270,14 @@ export class WalletManager {
       this.disconnect(id)
     );
     await Promise.all(disconnectPromises);
+  }
+
+  /**
+   * Automatically reconnect any previously connected Stellar/Soroban wallet session
+   */
+  async autoReconnectStellar(): Promise<WalletAccount | null> {
+    const reconnectManager = new StellarReconnectManager(this);
+    return reconnectManager.tryReconnect();
   }
 
   // ─── Active Account ────────────────────────────────────────────────────────

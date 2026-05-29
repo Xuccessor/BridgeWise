@@ -78,6 +78,8 @@ export { StellarBaseAdapter } from './adapters/stellar';
 export type { StellarAdapterOptions } from './adapters/stellar';
 export { FreighterAdapter } from './adapters/stellar';
 export type { FreighterAdapterOptions } from './adapters/stellar';
+export { StellarReconnectManager } from './adapters/stellar';
+export type { StellarSession } from './adapters/stellar';
 
 // Wallet Manager
 export { WalletManager } from './WalletManager';
