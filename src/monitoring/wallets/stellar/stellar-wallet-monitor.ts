@@ -4,6 +4,7 @@ import type {
   WalletAccount,
 } from '../../../../packages/wallet/src';
 import { stellarMetrics } from '../../../exporters/metrics/stellar';
+import { detectStellarNetwork } from '../../../networking/stellar';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -25,6 +26,13 @@ export interface WalletMonitorConfig {
   pingTimeoutMs?: number;
   /** Custom Horizon URLs keyed by chain ID. Falls back to built-in defaults. */
   horizonUrls?: Record<string, string>;
+  /**
+   * When enabled, attempts to auto-detect the active Stellar network by querying
+   * Horizon root endpoints and reading `network_passphrase`.
+   *
+   * You can also enable this via `STELLAR_AUTO_DETECT_NETWORK=true`.
+   */
+  autoDetectNetwork?: boolean;
   /** Called when an unhandled error escapes a listener. Defaults to console.error. */
   onListenerError?: (err: unknown, report: WalletHealthReport) => void;
 }
@@ -73,6 +81,7 @@ export class StellarWalletMonitor {
 
   /** Tracks in-flight per-wallet checks to prevent overlapping polls. */
   private readonly inFlight = new Set<string>();
+  private detectedHorizonUrl: string | null = null;
 
   constructor(manager: WalletManager, config: WalletMonitorConfig = {}) {
     this.manager = manager;
@@ -80,6 +89,8 @@ export class StellarWalletMonitor {
       checkIntervalMs: config.checkIntervalMs ?? DEFAULT_CHECK_INTERVAL_MS,
       pingTimeoutMs:   config.pingTimeoutMs   ?? DEFAULT_PING_TIMEOUT_MS,
       horizonUrls:     config.horizonUrls     ?? {},
+      autoDetectNetwork:
+        config.autoDetectNetwork ?? process.env.STELLAR_AUTO_DETECT_NETWORK === 'true',
       onListenerError: config.onListenerError ??
         ((err, report) =>
           console.error(`[StellarWalletMonitor] Listener error for ${report.walletId}:`, err)),
@@ -297,7 +308,7 @@ export class StellarWalletMonitor {
     chainId: string,
     adapter: WalletAdapter,
   ): Promise<{ ok: boolean; error?: string }> {
-    const url = this.resolveHorizonUrl(chainId, adapter);
+    const url = await this.resolveHorizonUrl(chainId, adapter);
 
     try {
       const controller = new AbortController();
@@ -323,7 +334,10 @@ export class StellarWalletMonitor {
     }
   }
 
-  private resolveHorizonUrl(chainId: string, adapter: WalletAdapter): string {
+  private async resolveHorizonUrl(
+    chainId: string,
+    adapter: WalletAdapter,
+  ): Promise<string> {
     // 1. Caller-supplied override
     if (this.config.horizonUrls[chainId]) return this.config.horizonUrls[chainId];
 
@@ -342,7 +356,21 @@ export class StellarWalletMonitor {
       if (chainId.includes(key.split(':')[1]!)) return url;
     }
 
-    // 4. Final fallback — mainnet
+    // 4. Optional auto-detection
+    if (this.config.autoDetectNetwork) {
+      if (this.detectedHorizonUrl) return this.detectedHorizonUrl;
+      try {
+        const detected = await detectStellarNetwork({
+          timeoutMs: this.config.pingTimeoutMs,
+        });
+        this.detectedHorizonUrl = detected.horizonUrl;
+        return detected.horizonUrl;
+      } catch {
+        // Fall through
+      }
+    }
+
+    // 5. Final fallback — mainnet
     return HORIZON_URLS['stellar:public']!;
   }
 
