@@ -54,4 +54,4 @@ libs/bridge-core/node_modules
 *.pfx
 secrets/
 credentials/
-*.secret
+*.secretpackages/sdk/metrics/node_modules

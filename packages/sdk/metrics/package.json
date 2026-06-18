@@ -1,0 +1,21 @@
+{
+  "name": "@bridgewise/sdk-metrics",
+  "version": "0.1.0",
+  "description": "SDK telemetry collector, aggregator, and adoption reporter for BridgeWise SDKs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint \"src/**/*.ts\" --fix"
+  },
+  "keywords": ["bridgewise", "sdk", "metrics", "telemetry", "analytics"],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.7",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.3.0"
+  }
+}
