@@ -120,25 +120,56 @@ export const TEMPLATE_VARIABLES = {
       options: ['mint', 'transfer', 'burn', 'balance'],
     },
   ],
+  soroban: [
+    {
+      key: 'contractId',
+      label: 'Smart Contract ID',
+      description: 'Soroban contract identifier (C...)',
+      type: 'string' as const,
+      required: true,
+    },
+    {
+      key: 'functionName',
+      label: 'Function Name',
+      description: 'Smart contract function to invoke',
+      type: 'string' as const,
+      required: true,
+    },
+    {
+      key: 'args',
+      label: 'Arguments Json String',
+      description: 'Serialized JSON array of contract inputs',
+      type: 'string' as const,
+      required: false,
+      defaultValue: '[]',
+    },
+  ],
 };
 
 export const STELLAR_TEMPLATE_META = {
-  'payment': {
+  payment: {
     id: 'stellar-payment',
     name: 'Payment Integration',
     description: 'Basic Stellar payment sending and receiving integration',
     version: '1.0.0',
   },
-  'dex': {
+  dex: {
     id: 'stellar-dex',
     name: 'DEX Integration',
     description: 'Stellar decentralized exchange order management',
     version: '1.0.0',
   },
-  'nft': {
+  nft: {
     id: 'stellar-nft',
     name: 'NFT Integration',
     description: 'Soroban-based NFT contract interaction template',
+    version: '1.0.0',
+  },
+  soroban: {
+    id: 'soroban-playground',
+    name: 'Soroban Developer Playground',
+    description:
+      'Starter smart contract invocation template for Soroban environments',
     version: '1.0.0',
   },
 };

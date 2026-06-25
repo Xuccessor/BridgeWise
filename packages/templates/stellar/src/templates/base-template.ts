@@ -6,11 +6,11 @@ import {
 import { NETWORK_PRESETS, DEFAULT_NETWORK } from '../config/default-config';
 
 export class BaseStellarTemplate implements StellarTemplate {
-  readonly id = 'stellar-base';
-  readonly name = 'Base Stellar Integration';
-  readonly description = 'Foundation template for any Stellar integration';
-  readonly type = 'custom' as const;
-  readonly version = '1.0.0';
+  id: string = 'stellar-base';
+  name: string = 'Base Stellar Integration';
+  description: string = 'Foundation template for any Stellar integration';
+  type: any = 'custom';
+  version: string = '1.0.0';
   readonly variables = [];
 
   generate(config: StellarTemplateConfig): Record<string, unknown> {
@@ -36,7 +36,10 @@ export class BaseStellarTemplate implements StellarTemplate {
 
     if (!config.sourceAccount) {
       errors.push('Source account is required');
-    } else if (!config.sourceAccount.startsWith('G') && !config.sourceAccount.startsWith('S')) {
+    } else if (
+      !config.sourceAccount.startsWith('G') &&
+      !config.sourceAccount.startsWith('S')
+    ) {
       errors.push('Source account must be a valid Stellar key (G... or S...)');
     }
 

@@ -1,9 +1,15 @@
-export type NetworkPreset = 'public' | 'testnet' | 'futurenet' | 'sandbox' | 'custom';
+export type NetworkPreset =
+  | 'public'
+  | 'testnet'
+  | 'futurenet'
+  | 'sandbox'
+  | 'custom';
 
 export type StellarTemplateType =
   | 'payment'
   | 'dex'
   | 'nft'
+  | 'soroban'
   | 'custom';
 
 export interface StellarNetworkConfig {
@@ -45,6 +51,18 @@ export interface StellarTemplate {
   generate(config: StellarTemplateConfig): unknown;
   validate?(config: StellarTemplateConfig): string[];
   getDefaults?(): Partial<StellarTemplateConfig>;
+}
+
+export interface SorobanOperation {
+  contractId: string;
+  functionName: string;
+  args: Array<{
+    name?: string;
+    type: string;
+    value: unknown;
+  }>;
+  simulated?: boolean;
+  [key: string]: unknown;
 }
 
 export interface TemplateResult<T = unknown> {

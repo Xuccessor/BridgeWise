@@ -26,6 +26,7 @@ export {
   PaymentTemplate,
   DexTemplate,
   NftTemplate,
+  SorobanTemplate,
 } from './templates';
 
 export const STELLAR_TEMPLATES_VERSION = '0.1.0';
