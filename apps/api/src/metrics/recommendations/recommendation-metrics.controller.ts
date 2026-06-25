@@ -12,7 +12,7 @@ import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import {
   RecommendationMetricsService,
   USER_PREFERENCES,
-} from '../../../../src/api/metrics/recommendations';
+} from '../../../../../src/api/metrics/recommendations';
 import type {
   RankingStatistics,
   RecommendationFilter,
@@ -20,7 +20,7 @@ import type {
   RecommendationMetrics,
   RouteMetrics,
   UserPreference,
-} from '../../../../src/api/metrics/recommendations';
+} from '../../../../../src/api/metrics/recommendations';
 
 /**
  * Soroban Route Recommendation Metrics API (#613).

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RecommendationMetricsController } from './recommendation-metrics.controller';
-import { RecommendationMetricsService } from '../../../../src/api/metrics/recommendations';
+import { RecommendationMetricsService } from '../../../../../src/api/metrics/recommendations';
 
 /**
  * Soroban Route Recommendation Metrics API module (#613).
