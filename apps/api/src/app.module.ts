@@ -24,6 +24,7 @@ import { WalletSession } from './wallet/entities/wallet-session.entity';
 import { RecommendationV2Module } from './api/routes/v2/recommendation.module';
 import { IntelligenceHubModule } from './intelligence-hub/stellar/intelligence-hub.module';
 import { AssetDiscoveryModule } from './api/assets/discovery/stellar/asset-discovery.module';
+import { RecommendationMetricsModule } from './metrics/recommendations/recommendation-metrics.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { AssetDiscoveryModule } from './api/assets/discovery/stellar/asset-disco
     RecommendationV2Module,
     IntelligenceHubModule,
     AssetDiscoveryModule,
+    RecommendationMetricsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
